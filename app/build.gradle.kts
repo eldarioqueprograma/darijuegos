@@ -5,13 +5,13 @@ plugins {
 }
 
 android {
-    namespace = "com.zdari.dado"
+    namespace = "com.zdari.darijuegos"
     compileSdk {
         version = release(36)
     }
 
     defaultConfig {
-        applicationId = "com.zdari.dado"
+        applicationId = "com.zdari.darijuegos"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -52,6 +52,11 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.foundation.layout)
     implementation("androidx.navigation:navigation-compose:2.7.7")
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.compose.animation)
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.compose.animation.core)
+    implementation(libs.androidx.material3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -59,4 +64,5 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+
 }

@@ -1,11 +1,11 @@
-package com.zdari.dado
+package com.zdari.darijuegos
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.zdari.dado.navigation.AppNavigation
-import com.zdari.dado.ui.theme.DadoTheme
+import com.zdari.darijuegos.navigation.AppNavigation
+import com.zdari.darijuegos.ui.theme.DarijuegosTheme
 
 
 
@@ -14,16 +14,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            DadoTheme {
+            DarijuegosTheme {
                 AppNavigation()
             }
         }
     }
 }
-
-
-
-
-
-
-

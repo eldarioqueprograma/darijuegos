@@ -1,4 +1,4 @@
-package com.zdari.dado
+package com.zdari.darijuegos
 
 import org.junit.Test
 

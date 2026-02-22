@@ -1,4 +1,4 @@
-package com.zdari.dado.screens
+package com.zdari.darijuegos.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -13,9 +13,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -34,6 +31,7 @@ fun MemoryGameScreen(navController: NavController) {
     var isProcessing by remember { mutableStateOf(false) }
     var score by remember { mutableStateOf(0) }
     var showHint by remember { mutableStateOf(false) }
+    var hint by remember { mutableStateOf("") }
     var hintPenalty by remember { mutableStateOf(0) }
     
     val scope = rememberCoroutineScope()
@@ -52,16 +50,12 @@ fun MemoryGameScreen(navController: NavController) {
                     containerColor = Color(0xFF388E3C)
                 ),
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Volver",
-                            tint = Color.White
-                        )
+                    TextButton(onClick = { navController.navigateUp() }) {
+                        Text("<-", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
                     }
                 },
                 actions = {
-                    IconButton(onClick = { 
+                    TextButton(onClick = { 
                         cards = generateCards()
                         flippedCards = emptyList()
                         matchedPairs = 0
@@ -70,13 +64,10 @@ fun MemoryGameScreen(navController: NavController) {
                         isProcessing = false
                         score = 0
                         showHint = false
+                        hint = ""
                         hintPenalty = 0
                     }) {
-                        Icon(
-                            imageVector = Icons.Default.Refresh,
-                            contentDescription = "Nuevo Juego",
-                            tint = Color.White
-                        )
+                        Text("🔄", fontSize = 20.sp)
                     }
                 }
             )
@@ -107,10 +98,10 @@ fun MemoryGameScreen(navController: NavController) {
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    InfoCard("Parejas", "$matchedPairs/8", Color(0xFF388E3C))
-                    InfoCard("Intentos", attempts.toString(), Color(0xFF1976D2))
-                    InfoCard("Puntuación", score.toString(), Color(0xFFFF9800))
-                    InfoCard("Penalización", hintPenalty.toString(), Color(0xFFF44336))
+                    InfoCard2("Parejas", "$matchedPairs/8", Color(0xFF388E3C))
+                    InfoCard2("Intentos", attempts.toString(), Color(0xFF1976D2))
+                    InfoCard2("Puntos", score.toString(), Color(0xFFFF9800))
+                    InfoCard2("Penal", hintPenalty.toString(), Color(0xFFF44336))
                 }
             }
             
@@ -140,12 +131,6 @@ fun MemoryGameScreen(navController: NavController) {
                             color = Color(0xFF4CAF50)
                         )
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "¡Completaste todas las parejas!",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color(0xFF4CAF50)
-                        )
                         Text(
                             text = "Puntuación final: ${score - hintPenalty} puntos",
                             fontSize = 14.sp,
@@ -216,7 +201,6 @@ fun MemoryGameScreen(navController: NavController) {
                                             val secondCard = cards[flippedCards[1]]
                                             
                                             if (firstCard.content == secondCard.content) {
-                                                // Par encontrada
                                                 cards = cards.mapIndexed { i, card ->
                                                     if (i == flippedCards[0] || i == flippedCards[1]) {
                                                         card.copy(isMatched = true)
@@ -250,14 +234,11 @@ fun MemoryGameScreen(navController: NavController) {
             ) {
                 Button(
                     onClick = {
-                        showHint = true
-                        hintPenalty += 5
-                        // Generar pista sobre una pareja no encontrada
                         val unmatchedCards = cards.filter { !it.isMatched }.distinctBy { it.content }
                         if (unmatchedCards.isNotEmpty()) {
-                            val randomCard = unmatchedCards.random()
-                            // No revelamos la posición exacta, solo damos una pista general
-                            hint = "Busca ${unmatchedCards.size} parejas más"
+                            showHint = true
+                            hintPenalty += 5
+                            hint = "Faltan ${unmatchedCards.size} parejas"
                         }
                     },
                     enabled = !showHint && !gameWon,
@@ -277,6 +258,7 @@ fun MemoryGameScreen(navController: NavController) {
                             isProcessing = false
                             score = 0
                             showHint = false
+                            hint = ""
                             hintPenalty = 0
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
@@ -290,7 +272,7 @@ fun MemoryGameScreen(navController: NavController) {
 }
 
 @Composable
-fun InfoCard(title: String, value: String, color: Color) {
+fun InfoCard2(title: String, value: String, color: Color) {
     Card(
         colors = CardDefaults.cardColors(containerColor = color.copy(alpha = 0.1f)),
         shape = RoundedCornerShape(8.dp)
@@ -299,17 +281,8 @@ fun InfoCard(title: String, value: String, color: Color) {
             modifier = Modifier.padding(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = title,
-                fontSize = 12.sp,
-                color = color
-            )
-            Text(
-                text = value,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = color
-            )
+            Text(text = title, fontSize = 11.sp, color = color)
+            Text(text = value, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = color)
         }
     }
 }
@@ -325,7 +298,7 @@ fun MemoryCard(
         onClick = onClick,
         modifier = Modifier
             .size(80.dp)
-            .scale(if (isFlipped && !card.isMatched) 1.05f else 1f),
+            .scale(if (isFlipped && !card.isMatched) 1.1f else 1f),
         enabled = canFlip || isFlipped,
         colors = CardDefaults.cardColors(
             containerColor = if (isFlipped) Color(0xFFE3F2FD) else Color(0xFF388E3C)
@@ -341,9 +314,7 @@ fun MemoryCard(
             if (isFlipped) {
                 Text(
                     text = card.content,
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF1976D2)
+                    fontSize = 32.sp
                 )
             } else {
                 Text(

@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "dado"
+rootProject.name = "darijuegos"
 include(":app")
