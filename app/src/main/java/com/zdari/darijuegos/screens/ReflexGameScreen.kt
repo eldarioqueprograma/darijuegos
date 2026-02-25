@@ -110,7 +110,7 @@ fun ReflexGameScreen(navController: NavController) {
     }
 
     LaunchedEffect(Unit) {
-        job = coroutineScope.launch { delay(Random.nextLong(1000, 4000)); startTime = System.currentTimeMillis(); gameState = "ready" }
+        job = coroutineScope.launch { delay(Random.nextLong(1000, 2000)); startTime = System.currentTimeMillis(); gameState = "ready" }
     }
 }
 

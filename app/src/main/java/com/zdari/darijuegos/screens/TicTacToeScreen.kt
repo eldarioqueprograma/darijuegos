@@ -140,32 +140,43 @@ fun TicTacToeScreen(navController: NavController) {
                                             RoundedCornerShape(8.dp)
                                         )
                                         .clickable(enabled = !isGameOver && board[i][j] == null && (!isVsComputer || currentPlayer == "X")) {
-                                            board[i][j] = currentPlayer
+                                            // 1. Clonar para el jugador
+                                            val newBoard = board.map { it.clone() }.toTypedArray()
+                                            newBoard[i][j] = currentPlayer
+                                            board = newBoard
+
                                             checkWin(board) { winWinner, over ->
                                                 winner = winWinner
                                                 isGameOver = over
                                                 if (over && winWinner == "X") scoreX++
                                                 if (over && winWinner == "O") scoreO++
-                                                
+
                                                 if (!over) {
-                                                    currentPlayer = "O"
                                                     if (isVsComputer) {
+                                                        // Modo CPU: Le toca pensar a la máquina (O)
+                                                        currentPlayer = "O"
                                                         scope.launch {
                                                             delay(600)
                                                             val move = getCPUMove(board, computerDifficulty)
                                                             if (move != null) {
-                                                                board[move.first][move.second] = "O"
+                                                                val newBoardCpu = board.map { it.clone() }.toTypedArray()
+                                                                newBoardCpu[move.first][move.second] = "O"
+                                                                board = newBoardCpu
+
                                                                 checkWin(board) { w2, o2 ->
                                                                     winner = w2
                                                                     isGameOver = o2
                                                                     if (o2 && w2 == "O") scoreO++
-                                                                    currentPlayer = "X"
+                                                                    currentPlayer = "X" // Le devolvemos el turno al humano
                                                                 }
                                                             }
                                                         }
                                                     } else {
-                                                        currentPlayer = "O"
+                                                        // Modo 2 Jugadores: Alternamos dinámicamente entre X y O
+                                                        currentPlayer = if (currentPlayer == "X") "O" else "X"
                                                     }
+
+
                                                 }
                                             }
                                         },
